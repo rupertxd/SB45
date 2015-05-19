@@ -14,21 +14,28 @@ else {
 	}
 }
 
-
 foreach ($kwds as $kwd) {
-	$url = str_replace('_KEYWORD_', urlencode($kwd), $URL_GSADV_XML);
-	$url = str_replace('_LANG_', 'zh', $url);
-	$advstr = file_get_contents($url);
-	$xml = new SimpleXMLIterator($advstr);
-	// <toplevel>
-	// <CompleteSuggestion>
-	// <suggestion data="14th amendment"/>
-	// </CompleteSuggestion>
-	$xmi = $xml->xpath('/toplevel/CompleteSuggestion/suggestion');
-	foreach ($xmi as $node) {
-		$natts = $node->attributes();
-		echo "{$natts['data']}\n";
-	}
-		
+	scexplore($kwd);
+}
 
+function scexplore($kwd) {
+	global $URL_GSADV_XML;
+	$an = new AnsiColor();
+	foreach ($URL_GSADV_XML as $gaurl) {
+		$url = str_replace('_KEYWORD_', urlencode($kwd), $gaurl);
+		$url = str_replace('_LANG_', 'en', $url);
+		$advstr = file_get_contents($url);
+		$xml = new SimpleXMLIterator($advstr);
+		// <toplevel>
+		// <CompleteSuggestion>
+		// <suggestion data="14th amendment"/>
+		// </CompleteSuggestion>
+
+		$xmi = $xml->xpath('/toplevel/CompleteSuggestion/suggestion');
+		echo "{$an->c(13240)}$url{$an->n}\n";
+		foreach ($xmi as $node) {
+			$natts = $node->attributes();
+			echo "{$natts['data']}\n";
+		}
+	}
 }
